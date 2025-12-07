@@ -1,0 +1,3523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Manager Pro 💰</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4fc3f7;
+            --secondary-color: #2b2b2b;
+            --accent-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --success-color: #4caf50;
+            --text-color: #ffffff;
+            --dark-bg: #1a1a1a;
+            --medium-bg: #2b2b2b;
+            --light-bg: #3c3c3c;
+            --border-color: #555555;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .app-header {
+            background-color: var(--dark-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .app-title {
+            color: var(--primary-color);
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-source-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-source-selector select {
+            background-color: var(--medium-bg);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .update-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .update-button:hover {
+            background-color: #03a9f4;
+        }
+
+        .update-button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+
+        /* Tabs Navigation */
+        .tabs-container {
+            display: flex;
+            background-color: var(--dark-bg);
+            border-radius: 10px 10px 0 0;
+            overflow: hidden;
+            margin-bottom: 0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 15px 20px;
+            background-color: var(--medium-bg);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            min-width: 120px;
+        }
+
+        .tab:hover {
+            background-color: var(--light-bg);
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom: 3px solid white;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            background-color: var(--light-bg);
+            border-radius: 0 0 10px 10px;
+            padding: 20px;
+            min-height: 600px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Dashboard Styles */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background-color: var(--medium-bg);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-title {
+            color: var(--text-color);
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .metric-value {
+            color: var(--primary-color);
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-box {
+            background-color: var(--medium-bg);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-title {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .alerts-container {
+            background-color: var(--medium-bg);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .alerts-title {
+            color: var(--warning-color);
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alerts-list {
+            list-style-type: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Positions Tab Styles */
+        .positions-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .add-button {
+            background-color: var(--primary-color);
+        }
+
+        .add-button:hover {
+            background-color: #03a9f4;
+        }
+
+        .modify-button {
+            background-color: var(--warning-color);
+        }
+
+        .modify-button:hover {
+            background-color: #f57c00;
+        }
+
+        .delete-button {
+            background-color: var(--danger-color);
+        }
+
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .search-container {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            background-color: var(--medium-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 5px;
+            min-width: 250px;
+        }
+
+        .positions-table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .positions-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        .positions-table th {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .positions-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--medium-bg);
+        }
+
+        .positions-table tr:hover td {
+            background-color: var(--light-bg);
+        }
+
+        .positive-value {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .negative-value {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        .total-metrics {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--dark-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .total-metric {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .total-metric-label {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .total-metric-value {
+            font-size: 22px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .total-invested {
+            color: var(--primary-color);
+            background-color: var(--medium-bg);
+            border: 2px solid var(--primary-color);
+        }
+
+        .total-current {
+            color: var(--primary-color);
+            background-color: var(--medium-bg);
+            border: 2px solid var(--primary-color);
+        }
+
+        .total-gain-positive {
+            color: var(--accent-color);
+            background-color: var(--medium-bg);
+            border: 2px solid var(--accent-color);
+        }
+
+        .total-gain-negative {
+            color: var(--danger-color);
+            background-color: var(--medium-bg);
+            border: 2px solid var(--danger-color);
+        }
+
+        /* Analysis Tab Styles */
+        .goal-container {
+            background-color: var(--dark-bg);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid var(--primary-color);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .goal-title {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .goal-change-button {
+            background-color: #9c27b0;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .goal-change-button:hover {
+            background-color: #7b1fa2;
+        }
+
+        .goal-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .goal-item {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background-color: var(--medium-bg);
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            min-width: 200px;
+        }
+
+        .goal-item-label {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .goal-item-value {
+            font-size: 20px;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-label {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .progress-bar-container {
+            height: 30px;
+            background-color: var(--medium-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .goal-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .simulator-container, .optimization-container {
+            background-color: var(--dark-bg);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid var(--border-color);
+        }
+
+        .simulator-title, .optimization-title {
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .simulator-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-label {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .control-input {
+            background-color: var(--medium-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+
+        .simulate-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+            align-self: flex-end;
+        }
+
+        .simulate-button:hover {
+            background-color: #388e3c;
+        }
+
+        .results-container {
+            background-color: var(--medium-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-line;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .optimization-text {
+            background-color: var(--medium-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-line;
+            font-size: 14px;
+        }
+
+        .analyze-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .analyze-button:hover {
+            background-color: #03a9f4;
+        }
+
+        /* Charts Tab Styles */
+        .chart-selector-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .chart-selector {
+            background-color: var(--medium-bg);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            min-width: 300px;
+        }
+
+        .main-chart-container {
+            background-color: var(--dark-bg);
+            border-radius: 10px;
+            padding: 25px;
+            height: 500px;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Recommendation Tab Styles */
+        .recommendation-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .goal-summary-card {
+            background-color: var(--dark-bg);
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .goal-summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .goal-summary-title {
+            color: var(--primary-color);
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .goal-summary-values {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .goal-summary-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .goal-summary-label {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .goal-summary-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .goal-summary-value.warning {
+            color: var(--warning-color);
+        }
+
+        .goal-summary-value.primary {
+            color: var(--primary-color);
+        }
+
+        .recommendation-controls {
+            background-color: var(--dark-bg);
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid var(--border-color);
+        }
+
+        .recommendation-title {
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation-options {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .option-label {
+            font-size: 14px;
+            color: var(--text-color);
+            font-weight: bold;
+        }
+
+        .option-input {
+            background-color: var(--medium-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .option-select {
+            background-color: var(--medium-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .calculate-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .calculate-button:hover {
+            background-color: #388e3c;
+        }
+
+        .recommendation-results {
+            background-color: var(--dark-bg);
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid var(--border-color);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-title {
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .results-summary {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .summary-item {
+            background-color: var(--medium-bg);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            min-width: 200px;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .summary-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .summary-value.primary {
+            color: var(--primary-color);
+        }
+
+        .results-table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .results-table th {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+        }
+
+        .results-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--medium-bg);
+        }
+
+        .results-table tr:hover td {
+            background-color: var(--light-bg);
+        }
+
+        .buy-recommendation {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .sell-recommendation {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        .hold-recommendation {
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        .recommendation-explanation {
+            background-color: var(--dark-bg);
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid var(--border-color);
+            margin-top: 20px;
+        }
+
+        .explanation-title {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation-content {
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .explanation-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .explanation-content li {
+            margin-bottom: 8px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .modal-content {
+            background-color: var(--dark-bg);
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid var(--primary-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+        }
+
+        .modal-title {
+            color: var(--primary-color);
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: var(--medium-bg);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            padding: 12px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-select {
+            width: 100%;
+            background-color: var(--medium-bg);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            padding: 12px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .modal-button {
+            padding: 12px 25px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .modal-button.cancel {
+            background-color: var(--danger-color);
+        }
+
+        .modal-button.cancel:hover {
+            background-color: #d32f2f;
+        }
+
+        .modal-button.save {
+            background-color: var(--accent-color);
+        }
+
+        .modal-button.save:hover {
+            background-color: #388e3c;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background-color: var(--dark-bg);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .status-message {
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .progress-bar-status {
+            width: 200px;
+            height: 20px;
+            background-color: var(--medium-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .goal-metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                flex: 1 0 calc(33.333% - 2px);
+                font-size: 14px;
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs-container {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 0 calc(50% - 2px);
+                font-size: 14px;
+                padding: 12px 15px;
+            }
+            
+            .total-metrics {
+                flex-direction: column;
+            }
+            
+            .positions-toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-container {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .search-input {
+                width: 100%;
+                min-width: unset;
+            }
+            
+            .goal-info {
+                flex-direction: column;
+            }
+            
+            .simulator-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .control-input {
+                width: 100%;
+            }
+            
+            .goal-summary-values {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .recommendation-options {
+                flex-direction: column;
+            }
+            
+            .option-group {
+                min-width: 100%;
+            }
+            
+            .results-summary {
+                flex-direction: column;
+            }
+            
+            .summary-item {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab {
+                flex: 1 0 100%;
+            }
+            
+            .modal-content {
+                padding: 20px;
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="app-title">
+                <i class="fas fa-chart-line"></i>
+                PORTFOLIO MANAGER PRO
+            </div>
+            <div class="data-source-selector">
+                <select id="dataSource">
+                    <option value="yfinance">📡 Yahoo Finance (Recomendado)</option>
+                    <option value="byma">🏦 BYMA (Bolsa Argentina)</option>
+                    <option value="multi">🔄 Múltiples Fuentes</option>
+                </select>
+                <button id="updateButton" class="update-button">
+                    <i class="fas fa-sync-alt"></i> Actualizar Precios
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <button class="tab active" data-tab="dashboard">
+                <i class="fas fa-chart-bar"></i> Dashboard
+            </button>
+            <button class="tab" data-tab="positions">
+                <i class="fas fa-list"></i> Posiciones
+            </button>
+            <button class="tab" data-tab="recommendation">
+                <i class="fas fa-shopping-cart"></i> Compras
+            </button>
+            <button class="tab" data-tab="analysis">
+                <i class="fas fa-search"></i> Análisis
+            </button>
+            <button class="tab" data-tab="charts">
+                <i class="fas fa-chart-pie"></i> Gráficos
+            </button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="metrics-grid" id="dashboardMetrics">
+                <!-- Las métricas se cargarán dinámicamente con JavaScript -->
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-box">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-pie"></i> Distribución por Sector
+                    </div>
+                    <canvas id="sectorChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-bar"></i> Top Performers
+                    </div>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="alerts-container">
+                <div class="alerts-title">
+                    <i class="fas fa-exclamation-triangle"></i> Alertas y Sugerencias
+                </div>
+                <ul class="alerts-list" id="alertsList">
+                    <!-- Las alertas se cargarán dinámicamente con JavaScript -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Positions Tab -->
+        <div id="positions" class="tab-content">
+            <div class="positions-toolbar">
+                <button class="action-button add-button" id="addPositionButton">
+                    <i class="fas fa-plus"></i> Agregar Posición
+                </button>
+                <button class="action-button modify-button" id="modifyPositionButton">
+                    <i class="fas fa-edit"></i> Modificar Seleccionada
+                </button>
+                <button class="action-button delete-button" id="deletePositionButton">
+                    <i class="fas fa-trash"></i> Eliminar Seleccionada
+                </button>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Buscar por ticker, nombre o sector...">
+                </div>
+            </div>
+            
+            <div class="positions-table-container">
+                <table class="positions-table" id="positionsTable">
+                    <thead>
+                        <tr>
+                            <th>Ticker</th>
+                            <th>Nombre</th>
+                            <th>Sector</th>
+                            <th>Cantidad</th>
+                            <th>Precio Compra</th>
+                            <th>Precio Actual</th>
+                            <th>Valor Actual</th>
+                            <th>Inversión</th>
+                            <th>Ganancia $</th>
+                            <th>Ganancia %</th>
+                            <th>Dividend Yield</th>
+                            <th>Rendimiento</th>
+                        </tr>
+                    </thead>
+                    <tbody id="positionsTableBody">
+                        <!-- Las posiciones se cargarán dinámicamente con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="total-metrics">
+                <div class="total-metric">
+                    <div class="total-metric-label">
+                        <i class="fas fa-money-bill-wave"></i> INVERSIÓN TOTAL
+                    </div>
+                    <div id="totalInvestedValue" class="total-metric-value total-invested">$0.00</div>
+                </div>
+                <div class="total-metric">
+                    <div class="total-metric-label">
+                        <i class="fas fa-chart-line"></i> VALOR ACTUAL TOTAL
+                    </div>
+                    <div id="totalCurrentValue" class="total-metric-value total-current">$0.00</div>
+                </div>
+                <div class="total-metric">
+                    <div class="total-metric-label">
+                        <i class="fas fa-trophy"></i> GANANCIA TOTAL DEL PORTFOLIO
+                    </div>
+                    <div id="totalGainValue" class="total-metric-value total-gain-positive">$0.00 (0.00%)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nueva Pestaña de Recomendación de Compras -->
+        <div id="recommendation" class="tab-content">
+            <div class="recommendation-container">
+                <!-- Resumen del Objetivo -->
+                <div class="goal-summary-card">
+                    <div class="goal-summary-header">
+                        <div class="goal-summary-title">
+                            <i class="fas fa-bullseye"></i> TU OBJETIVO ACTUAL
+                        </div>
+                        <button class="action-button add-button" onclick="openModal('changeGoalModal')">
+                            <i class="fas fa-edit"></i> Cambiar Objetivo
+                        </button>
+                    </div>
+                    <div class="goal-summary-values">
+                        <div class="goal-summary-item">
+                            <div class="goal-summary-label">INGRESOS ANUALES OBJETIVO</div>
+                            <div id="goalSummaryIncome" class="goal-summary-value">$0</div>
+                        </div>
+                        <div class="goal-summary-item">
+                            <div class="goal-summary-label">YIELD OBJETIVO</div>
+                            <div id="goalSummaryYield" class="goal-summary-value">0.0%</div>
+                        </div>
+                        <div class="goal-summary-item">
+                            <div class="goal-summary-label">CAPITAL NECESARIO</div>
+                            <div id="goalSummaryCapital" class="goal-summary-value primary">$0</div>
+                        </div>
+                        <div class="goal-summary-item">
+                            <div class="goal-summary-label">CAPITAL ACTUAL</div>
+                            <div id="goalSummaryCurrent" class="goal-summary-value warning">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controles para la Recomendación -->
+                <div class="recommendation-controls">
+                    <div class="recommendation-title">
+                        <i class="fas fa-calculator"></i> CALCULADOR DE COMPRAS
+                    </div>
+                    <div class="recommendation-options">
+                        <div class="option-group">
+                            <label class="option-label">Monto a Invertir:</label>
+                            <input type="number" class="option-input" id="investmentAmount" value="100000" min="1000" step="1000">
+                        </div>
+                        <div class="option-group">
+                            <label class="option-label">Estrategia de Distribución:</label>
+                            <select class="option-select" id="distributionStrategy">
+                                <option value="equal">Igual Distribución</option>
+                                <option value="proportional">Proporcional al Rendimiento</option>
+                                <option value="sector">Por Sector</option>
+                                <option value="yield">Por Mayor Dividend Yield</option>
+                            </select>
+                        </div>
+                        <div class="option-group">
+                            <label class="option-label">% a Invertir en Nuevas Acciones:</label>
+                            <input type="range" class="option-input" id="newStocksPercentage" min="0" max="100" value="30">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                                <span>0%</span>
+                                <span id="newStocksValue">30%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="calculate-button" id="calculateRecommendation">
+                        <i class="fas fa-calculator"></i> Calcular Recomendaciones de Compra
+                    </button>
+                </div>
+
+                <!-- Resultados de la Recomendación -->
+                <div class="recommendation-results">
+                    <div class="results-header">
+                        <div class="results-title">
+                            <i class="fas fa-clipboard-check"></i> RECOMENDACIONES DE COMPRA
+                        </div>
+                        <button class="action-button add-button" id="exportRecommendations">
+                            <i class="fas fa-file-export"></i> Exportar Recomendaciones
+                        </button>
+                    </div>
+
+                    <div class="results-summary">
+                        <div class="summary-item">
+                            <div class="summary-label">MONTO TOTAL A INVERTIR</div>
+                            <div id="totalInvestmentAmount" class="summary-value">$0</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">ACCIONES RECOMENDADAS</div>
+                            <div id="recommendedStocksCount" class="summary-value primary">0</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">INGRESOS ANUALES PROYECTADOS</div>
+                            <div id="projectedIncome" class="summary-value">$0</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">% DEL OBJETIVO ALCANZADO</div>
+                            <div id="goalAchievedPercent" class="summary-value">0%</div>
+                        </div>
+                    </div>
+
+                    <div class="results-table-container">
+                        <table class="results-table" id="recommendationsTable">
+                            <thead>
+                                <tr>
+                                    <th>Acción</th>
+                                    <th>Precio Actual</th>
+                                    <th>Dividend Yield</th>
+                                    <th>% Recomendado</th>
+                                    <th>Monto a Invertir</th>
+                                    <th>Cantidad a Comprar</th>
+                                    <th>Ingreso Anual</th>
+                                    <th>Recomendación</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recommendationsTableBody">
+                                <!-- Los resultados se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Explicación de la Recomendación -->
+                <div class="recommendation-explanation">
+                    <div class="explanation-title">
+                        <i class="fas fa-info-circle"></i> ¿CÓMO FUNCIONA ESTA RECOMENDACIÓN?
+                    </div>
+                    <div class="explanation-content">
+                        <p>Este sistema calcula cuánto debes comprar de cada acción para optimizar tu portfolio hacia tu objetivo de ingresos anuales.</p>
+                        
+                        <p><strong>Método de cálculo:</strong></p>
+                        <ul>
+                            <li>Se calcula el capital necesario para alcanzar tu objetivo basado en el yield objetivo</li>
+                            <li>Se analiza tu portfolio actual y su contribución al objetivo</li>
+                            <li>Se distribuye el monto a invertir según la estrategia seleccionada</li>
+                            <li>Se considera el dividend yield histórico de cada acción</li>
+                            <li>Se optimiza para maximizar ingresos manteniendo diversificación</li>
+                        </ul>
+                        
+                        <p><strong>Tipos de recomendación:</strong></p>
+                        <ul>
+                            <li><span class="buy-recommendation">COMPRAR:</span> Acción que falta en tu portfolio o necesita aumentar</li>
+                            <li><span class="hold-recommendation">MANTENER:</span> Ya tienes la posición adecuada</li>
+                            <li><span class="sell-recommendation">REDUCIR:</span> Tienes demasiada exposición a esta acción</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="action-buttons" style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button class="action-button modify-button" id="rebalancePortfolio">
+                            <i class="fas fa-balance-scale"></i> Rebalancear Portfolio
+                        </button>
+                        <button class="action-button add-button" onclick="openModal('addPositionModal')">
+                            <i class="fas fa-plus"></i> Agregar Acciones
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Tab -->
+        <div id="analysis" class="tab-content">
+            <div class="goal-container">
+                <div class="goal-header">
+                    <div class="goal-title">
+                        <i class="fas fa-bullseye"></i> OBJETIVO DE INGRESOS ANUALES
+                    </div>
+                    <button class="goal-change-button" onclick="openModal('changeGoalModal')">
+                        <i class="fas fa-edit"></i> Cambiar Objetivo
+                    </button>
+                </div>
+                
+                <div class="goal-info">
+                    <div class="goal-item">
+                        <div class="goal-item-label">OBJETIVO ACTUAL</div>
+                        <div class="goal-item-value" id="goalValueLabel">$0 anuales</div>
+                    </div>
+                    <div class="goal-item">
+                        <div class="goal-item-label">YIELD OBJETIVO</div>
+                        <div class="goal-item-value" id="goalYieldValue">0.0%</div>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-label" id="progressLabel">Progreso: 0.0%</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="goalProgressBar" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                
+                <div class="goal-metrics-grid" id="goalMetricsGrid">
+                    <!-- Las métricas del objetivo se cargarán dinámicamente con JavaScript -->
+                </div>
+            </div>
+            
+            <div class="simulator-container">
+                <div class="simulator-title">
+                    <i class="fas fa-chart-line"></i> SIMULADOR DE APORTES
+                </div>
+                
+                <div class="simulator-controls">
+                    <div class="control-group">
+                        <label class="control-label">Aporte mensual:</label>
+                        <input type="text" class="control-input" id="monthlyInput" value="50000">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Tasa anual (%):</label>
+                        <input type="text" class="control-input" id="rateInput" value="9">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Años:</label>
+                        <input type="text" class="control-input" id="yearsInput" value="5">
+                    </div>
+                    <button class="simulate-button" id="simulateButton">
+                        <i class="fas fa-rocket"></i> Simular
+                    </button>
+                </div>
+                
+                <div class="results-container" id="simulationResult">
+                    <!-- Los resultados de la simulación se mostrarán aquí -->
+                </div>
+            </div>
+            
+            <div class="optimization-container">
+                <div class="optimization-title">
+                    <i class="fas fa-sync-alt"></i> OPTIMIZACIÓN DEL PORTFOLIO
+                </div>
+                
+                <div class="optimization-text" id="optimizationText">
+                    <!-- El análisis de optimización se mostrará aquí -->
+                </div>
+                
+                <button class="analyze-button" id="analyzeButton">
+                    <i class="fas fa-search"></i> Analizar Optimización
+                </button>
+            </div>
+        </div>
+
+        <!-- Charts Tab -->
+        <div id="charts" class="tab-content">
+            <div class="chart-selector-container">
+                <select class="chart-selector" id="chartSelector">
+                    <option value="sector">Distribución por Sector</option>
+                    <option value="performance">Rendimiento por Activo</option>
+                    <option value="evolution">Evolución Histórica</option>
+                    <option value="goal">Comparativa vs Objetivo</option>
+                    <option value="gain">Ganancia por Activo</option>
+                </select>
+            </div>
+            
+            <div class="main-chart-container">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-message" id="statusMessage">
+                Listo - Usando Yahoo Finance
+            </div>
+            <div class="progress-bar-status" id="progressBarStatus">
+                <div class="progress-bar-fill" id="progressBarFill">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Position Modal -->
+    <div class="modal-overlay" id="addPositionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-plus"></i> AGREGAR NUEVA POSICIÓN
+                </div>
+                <button class="modal-close" onclick="closeModal('addPositionModal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Ticker:</label>
+                <input type="text" class="form-input" id="addTicker" placeholder="Ej: AAPL">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Nombre:</label>
+                <input type="text" class="form-input" id="addNombre" placeholder="Ej: Apple Inc.">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Sector:</label>
+                <select class="form-select" id="addSector">
+                    <option value="Tecnología">Tecnología</option>
+                    <option value="Financiero">Financiero</option>
+                    <option value="Salud">Salud</option>
+                    <option value="Consumo Defensivo">Consumo Defensivo</option>
+                    <option value="Energía">Energía</option>
+                    <option value="Industrial">Industrial</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Materiales">Materiales</option>
+                    <option value="Comunicaciones">Comunicaciones</option>
+                    <option value="FinTech/Pagos">FinTech/Pagos</option>
+                    <option value="Bienes Raíces">Bienes Raíces</option>
+                    <option value="Automotor">Automotor</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Cantidad:</label>
+                <input type="number" class="form-input" id="addCantidad" value="10" min="1">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Precio Compra:</label>
+                <input type="number" class="form-input" id="addPrecio" value="100.00" min="0.01" step="0.01">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Fecha Compra:</label>
+                <input type="date" class="form-input" id="addFecha" value="">
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-button cancel" onclick="closeModal('addPositionModal')">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="modal-button save" onclick="addPosition()">
+                    <i class="fas fa-check"></i> Agregar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modify Position Modal -->
+    <div class="modal-overlay" id="modifyPositionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-edit"></i> MODIFICAR POSICIÓN
+                </div>
+                <button class="modal-close" onclick="closeModal('modifyPositionModal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Ticker:</label>
+                <input type="text" class="form-input" id="modifyTicker" placeholder="Ej: AAPL">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Nombre:</label>
+                <input type="text" class="form-input" id="modifyNombre" placeholder="Ej: Apple Inc.">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Sector:</label>
+                <select class="form-select" id="modifySector">
+                    <option value="Tecnología">Tecnología</option>
+                    <option value="Financiero">Financiero</option>
+                    <option value="Salud">Salud</option>
+                    <option value="Consumo Defensivo">Consumo Defensivo</option>
+                    <option value="Energía">Energía</option>
+                    <option value="Industrial">Industrial</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Materiales">Materiales</option>
+                    <option value="Comunicaciones">Comunicaciones</option>
+                    <option value="FinTech/Pagos">FinTech/Pagos</option>
+                    <option value="Bienes Raíces">Bienes Raíces</option>
+                    <option value="Automotor">Automotor</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Cantidad:</label>
+                <input type="number" class="form-input" id="modifyCantidad" value="10" min="1">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Precio Compra:</label>
+                <input type="number" class="form-input" id="modifyPrecio" value="100.00" min="0.01" step="0.01">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Fecha Compra:</label>
+                <input type="date" class="form-input" id="modifyFecha" value="">
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-button cancel" onclick="closeModal('modifyPositionModal')">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="modal-button save" onclick="saveModifiedPosition()">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Goal Modal -->
+    <div class="modal-overlay" id="changeGoalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-bullseye"></i> CAMBIAR OBJETIVO DE INGRESOS
+                </div>
+                <button class="modal-close" onclick="closeModal('changeGoalModal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Ingresos Anuales Objetivo:</label>
+                <input type="number" class="form-input" id="goalIncome" value="100000" min="1000" step="1000">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Dividend Yield Objetivo:</label>
+                <input type="number" class="form-input" id="goalYield" value="3.5" min="0.1" max="20" step="0.1">
+            </div>
+            
+            <div id="goalInfo" class="form-group" style="background-color: var(--medium-bg); padding: 15px; border-radius: 8px; border: 2px solid var(--primary-color); margin-top: 20px;">
+                <!-- La información del objetivo se actualizará dinámicamente -->
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-button cancel" onclick="closeModal('changeGoalModal')">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="modal-button save" onclick="saveGoal()">
+                    <i class="fas fa-save"></i> Guardar Objetivo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Portfolio Manager Pro - Versión HTML/JavaScript COMPLETA
+        // Esta es una versión funcional completamente en cliente (sin servidor)
+
+        // ============================================================================
+        // CLASES DE DATOS
+        // ============================================================================
+
+        class Position {
+            constructor(ticker, nombre, sector, cantidad, precio_compra, fecha_compra, tipo = "CEDEAR") {
+                this.ticker = ticker;
+                this.nombre = nombre;
+                this.sector = sector;
+                this.cantidad = cantidad;
+                this.precio_compra = precio_compra;
+                this.fecha_compra = fecha_compra;
+                this.tipo = tipo;
+                this.inversion_inicial = this.cantidad * this.precio_compra;
+            }
+
+            toDict() {
+                return {
+                    ticker: this.ticker,
+                    nombre: this.nombre,
+                    sector: this.sector,
+                    cantidad: this.cantidad,
+                    precio_compra: this.precio_compra,
+                    fecha_compra: this.fecha_compra,
+                    tipo: this.tipo,
+                    inversion_inicial: this.inversion_inicial
+                };
+            }
+        }
+
+        class Portfolio {
+            constructor(nombre = "Mi Portfolio CEDEARs") {
+                this.nombre = nombre;
+                this.positions = {};
+                this.cash = 0.0;
+                this.historial = [];
+                this.goal_annual_income = 100000;
+                this.goal_yield = 3.5;
+                this.data_source = "yfinance";
+                this.loadFromLocalStorage();
+            }
+
+            loadFromLocalStorage() {
+                try {
+                    const data = localStorage.getItem('portfolioManagerData');
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        this.nombre = parsed.nombre || this.nombre;
+                        this.cash = parsed.cash || 0.0;
+                        this.goal_annual_income = parsed.goal_annual_income || 100000;
+                        this.goal_yield = parsed.goal_yield || 3.5;
+                        this.data_source = parsed.data_source || "yfinance";
+                        this.historial = parsed.historial || [];
+                        
+                        // Cargar posiciones
+                        this.positions = {};
+                        if (parsed.positions) {
+                            for (const posData of parsed.positions) {
+                                const pos = new Position(
+                                    posData.ticker,
+                                    posData.nombre,
+                                    posData.sector,
+                                    posData.cantidad,
+                                    posData.precio_compra,
+                                    posData.fecha_compra,
+                                    posData.tipo
+                                );
+                                this.positions[pos.ticker] = pos;
+                            }
+                        }
+                    } else {
+                        this.createOptimizedPortfolio();
+                    }
+                } catch (e) {
+                    console.error("Error cargando portfolio:", e);
+                    this.createOptimizedPortfolio();
+                }
+            }
+
+            createOptimizedPortfolio() {
+                const optimizedPositions = [
+                    new Position("KO", "Coca-Cola", "Consumo Defensivo", 10, 21370, "2024-01-15"),
+                    new Position("JPM", "JPMorgan Chase", "Financiero", 5, 16500, "2024-01-20"),
+                    new Position("MSFT", "Microsoft", "Tecnología", 3, 85000, "2024-02-01"),
+                    new Position("XOM", "Exxon Mobil", "Energía", 8, 14000, "2024-01-25"),
+                    new Position("JNJ", "Johnson & Johnson", "Salud", 6, 18000, "2024-02-10"),
+                    new Position("PG", "Procter & Gamble", "Consumo Defensivo", 5, 18000, "2024-02-12"),
+                    new Position("V", "Visa", "FinTech/Pagos", 2, 45000, "2024-02-15"),
+                    new Position("CEPU", "Central Puerto", "Utilities Arg", 15, 5600, "2024-01-30"),
+                    new Position("BMA", "Banco Macro", "Financiero Arg", 20, 3600, "2024-02-05"),
+                    new Position("YPFD", "YPF", "Energía Arg", 10, 8500, "2024-02-08"),
+                ];
+
+                for (const pos of optimizedPositions) {
+                    this.positions[pos.ticker] = pos;
+                }
+
+                this.cash = 100000;
+                this.saveToLocalStorage();
+            }
+
+            saveToLocalStorage() {
+                try {
+                    const data = {
+                        nombre: this.nombre,
+                        cash: this.cash,
+                        goal_annual_income: this.goal_annual_income,
+                        goal_yield: this.goal_yield,
+                        data_source: this.data_source,
+                        positions: Object.values(this.positions).map(pos => pos.toDict()),
+                        historial: this.historial,
+                        last_updated: new Date().toISOString()
+                    };
+
+                    localStorage.setItem('portfolioManagerData', JSON.stringify(data));
+                    return true;
+                } catch (e) {
+                    console.error("Error guardando:", e);
+                    return false;
+                }
+            }
+
+            updateDataSource(source) {
+                try {
+                    this.data_source = source;
+                    return this.saveToLocalStorage();
+                } catch (e) {
+                    console.error("Error actualizando fuente:", e);
+                    return false;
+                }
+            }
+
+            updateGoal(annual_income, yield_pct) {
+                try {
+                    this.goal_annual_income = annual_income;
+                    this.goal_yield = yield_pct;
+                    return this.saveToLocalStorage();
+                } catch (e) {
+                    console.error("Error actualizando objetivo:", e);
+                    return false;
+                }
+            }
+
+            addPosition(ticker, nombre, sector, cantidad, precio_compra, fecha_compra) {
+                try {
+                    const nuevaPos = new Position(
+                        ticker,
+                        nombre,
+                        sector,
+                        cantidad,
+                        precio_compra,
+                        fecha_compra
+                    );
+
+                    this.positions[ticker] = nuevaPos;
+                    this.saveToLocalStorage();
+                    return true;
+                } catch (e) {
+                    console.error("Error agregando:", e);
+                    return false;
+                }
+            }
+
+            updatePosition(old_ticker, new_ticker, nombre, sector, cantidad, precio_compra, fecha_compra) {
+                try {
+                    if (old_ticker !== new_ticker) {
+                        delete this.positions[old_ticker];
+                    }
+
+                    const nuevaPos = new Position(
+                        new_ticker,
+                        nombre,
+                        sector,
+                        cantidad,
+                        precio_compra,
+                        fecha_compra
+                    );
+
+                    this.positions[new_ticker] = nuevaPos;
+                    this.saveToLocalStorage();
+                    return true;
+                } catch (e) {
+                    console.error("Error modificando:", e);
+                    return false;
+                }
+            }
+
+            removePosition(ticker) {
+                if (this.positions[ticker]) {
+                    delete this.positions[ticker];
+                    this.saveToLocalStorage();
+                    return true;
+                }
+                return false;
+            }
+
+            calculateTotalMetrics(current_prices) {
+                let total_invested = 0.0;
+                let total_current = 0.0;
+                let total_gain = 0.0;
+                let total_gain_pct = 0.0;
+
+                for (const ticker in this.positions) {
+                    const position = this.positions[ticker];
+                    const current_price = current_prices[ticker] || 0;
+                    const position_invested = position.inversion_inicial;
+                    const position_current = position.cantidad * current_price;
+                    const position_gain = position_current - position_invested;
+
+                    total_invested += position_invested;
+                    total_current += position_current;
+                    total_gain += position_gain;
+                }
+
+                if (total_invested > 0) {
+                    total_gain_pct = (total_gain / total_invested) * 100;
+                }
+
+                return {
+                    total_invested,
+                    total_current,
+                    total_gain,
+                    total_gain_pct
+                };
+            }
+
+            calculateGoalMetrics(current_prices) {
+                let total_current = 0;
+                for (const ticker in this.positions) {
+                    const position = this.positions[ticker];
+                    const current_price = current_prices[ticker] || 0;
+                    total_current += position.cantidad * current_price;
+                }
+
+                // Capital necesario para alcanzar el objetivo
+                const capital_needed = this.goal_yield > 0 ? (this.goal_annual_income / this.goal_yield) * 100 : 0;
+                const current_capital = total_current;
+                const current_income = current_capital * (this.goal_yield / 100);
+                const missing_capital = Math.max(0, capital_needed - current_capital);
+                const progress_pct = capital_needed > 0 ? (current_capital / capital_needed * 100) : 0;
+
+                return {
+                    current_capital,
+                    current_income,
+                    capital_needed,
+                    missing_capital,
+                    progress_pct,
+                    goal_annual_income: this.goal_annual_income,
+                    goal_yield: this.goal_yield
+                };
+            }
+
+            // ============================================================================
+            // NUEVOS MÉTODOS PARA RECOMENDACIONES DE COMPRA
+            // ============================================================================
+
+            getRecommendedPurchases(current_prices, investment_amount, strategy = 'equal') {
+                const goalMetrics = this.calculateGoalMetrics(current_prices);
+                const missing_capital = goalMetrics.missing_capital;
+                
+                // Si ya alcanzamos el objetivo
+                if (missing_capital <= 0) {
+                    return {
+                        recommendations: [],
+                        total_investment: 0,
+                        projected_income: goalMetrics.current_income,
+                        goal_achieved: 100
+                    };
+                }
+
+                // Calcular cuanto necesitamos invertir (mínimo entre el monto disponible y lo que falta)
+                const investment_to_use = Math.min(investment_amount, missing_capital);
+                
+                // Base de datos de acciones disponibles con sus yields estimados
+                const availableStocks = {
+                    'KO': { nombre: 'Coca-Cola', sector: 'Consumo Defensivo', dividend_yield: 3.1, price: current_prices['KO'] || 21500 },
+                    'JPM': { nombre: 'JPMorgan Chase', sector: 'Financiero', dividend_yield: 2.8, price: current_prices['JPM'] || 16800 },
+                    'MSFT': { nombre: 'Microsoft', sector: 'Tecnología', dividend_yield: 0.8, price: current_prices['MSFT'] || 86000 },
+                    'XOM': { nombre: 'Exxon Mobil', sector: 'Energía', dividend_yield: 3.5, price: current_prices['XOM'] || 14200 },
+                    'JNJ': { nombre: 'Johnson & Johnson', sector: 'Salud', dividend_yield: 3.0, price: current_prices['JNJ'] || 18200 },
+                    'PG': { nombre: 'Procter & Gamble', sector: 'Consumo Defensivo', dividend_yield: 2.4, price: current_prices['PG'] || 18100 },
+                    'V': { nombre: 'Visa', sector: 'FinTech/Pagos', dividend_yield: 0.8, price: current_prices['V'] || 45500 },
+                    'CEPU': { nombre: 'Central Puerto', sector: 'Utilities Arg', dividend_yield: 4.2, price: current_prices['CEPU'] || 5800 },
+                    'BMA': { nombre: 'Banco Macro', sector: 'Financiero Arg', dividend_yield: 5.0, price: current_prices['BMA'] || 3800 },
+                    'YPFD': { nombre: 'YPF', sector: 'Energía Arg', dividend_yield: 0.0, price: current_prices['YPFD'] || 8700 },
+                    'GGAL': { nombre: 'Grupo Financiero Galicia', sector: 'Financiero Arg', dividend_yield: 3.8, price: 4500 },
+                    'PAMP': { nombre: 'Pampa Energía', sector: 'Energía', dividend_yield: 2.5, price: 3200 },
+                    'TXAR': { nombre: 'Ternium Argentina', sector: 'Materiales', dividend_yield: 4.1, price: 5800 },
+                    'IRSA': { nombre: 'IRSA Inversiones', sector: 'Bienes Raíces', dividend_yield: 3.2, price: 1200 },
+                    'COME': { nombre: 'Sociedad Comercial del Plata', sector: 'Industrial', dividend_yield: 2.8, price: 800 }
+                };
+
+                // Calcular distribución según estrategia
+                let stockWeights = {};
+                
+                switch(strategy) {
+                    case 'equal':
+                        // Distribución igual entre todas las acciones
+                        const equalWeight = 1 / Object.keys(availableStocks).length;
+                        Object.keys(availableStocks).forEach(ticker => {
+                            stockWeights[ticker] = equalWeight;
+                        });
+                        break;
+                        
+                    case 'proportional':
+                        // Proporcional al rendimiento esperado (dividend yield * precio)
+                        let totalScore = 0;
+                        Object.keys(availableStocks).forEach(ticker => {
+                            const stock = availableStocks[ticker];
+                            const score = stock.dividend_yield * stock.price;
+                            stockWeights[ticker] = score;
+                            totalScore += score;
+                        });
+                        
+                        // Normalizar
+                        Object.keys(stockWeights).forEach(ticker => {
+                            stockWeights[ticker] = stockWeights[ticker] / totalScore;
+                        });
+                        break;
+                        
+                    case 'sector':
+                        // Dar más peso a sectores subrepresentados
+                        const currentSectors = {};
+                        let currentTotalValue = 0;
+                        
+                        // Calcular valor actual por sector
+                        for (const ticker in this.positions) {
+                            const position = this.positions[ticker];
+                            const current_price = current_prices[ticker] || 0;
+                            const value = position.cantidad * current_price;
+                            
+                            if (!currentSectors[position.sector]) {
+                                currentSectors[position.sector] = 0;
+                            }
+                            currentSectors[position.sector] += value;
+                            currentTotalValue += value;
+                        }
+                        
+                        // Asignar pesos inversamente proporcionales a la representación actual
+                        Object.keys(availableStocks).forEach(ticker => {
+                            const stock = availableStocks[ticker];
+                            const currentSectorValue = currentSectors[stock.sector] || 0;
+                            const currentSectorPercent = currentTotalValue > 0 ? (currentSectorValue / currentTotalValue) * 100 : 0;
+                            
+                            // Menor peso si el sector ya está bien representado
+                            stockWeights[ticker] = 100 - currentSectorPercent;
+                        });
+                        
+                        // Normalizar
+                        const totalWeight = Object.values(stockWeights).reduce((a, b) => a + b, 0);
+                        Object.keys(stockWeights).forEach(ticker => {
+                            stockWeights[ticker] = stockWeights[ticker] / totalWeight;
+                        });
+                        break;
+                        
+                    case 'yield':
+                        // Dar más peso a acciones con mayor dividend yield
+                        Object.keys(availableStocks).forEach(ticker => {
+                            stockWeights[ticker] = availableStocks[ticker].dividend_yield;
+                        });
+                        
+                        // Normalizar
+                        const totalYield = Object.values(stockWeights).reduce((a, b) => a + b, 0);
+                        Object.keys(stockWeights).forEach(ticker => {
+                            stockWeights[ticker] = stockWeights[ticker] / totalYield;
+                        });
+                        break;
+                }
+
+                // Generar recomendaciones
+                const recommendations = [];
+                let total_projected_income = goalMetrics.current_income;
+                
+                Object.keys(stockWeights).forEach(ticker => {
+                    const weight = stockWeights[ticker];
+                    const stock = availableStocks[ticker];
+                    
+                    // Calcular monto a invertir en esta acción
+                    const amount_to_invest = investment_to_use * weight;
+                    
+                    // Calcular cantidad a comprar
+                    const quantity_to_buy = Math.floor(amount_to_invest / stock.price);
+                    
+                    // Calcular ingreso anual proyectado
+                    const annual_income = amount_to_invest * (stock.dividend_yield / 100);
+                    
+                    // Determinar recomendación
+                    let recommendation = 'COMPRAR';
+                    const currentPosition = this.positions[ticker];
+                    
+                    if (currentPosition) {
+                        const currentValue = currentPosition.cantidad * stock.price;
+                        const recommendedValue = amount_to_invest;
+                        
+                        if (recommendedValue < currentValue * 0.5) {
+                            recommendation = 'REDUCIR';
+                        } else if (recommendedValue <= currentValue * 1.2) {
+                            recommendation = 'MANTENER';
+                        }
+                    }
+                    
+                    // Solo incluir si la cantidad a comprar es mayor a 0
+                    if (quantity_to_buy > 0) {
+                        recommendations.push({
+                            ticker: ticker,
+                            nombre: stock.nombre,
+                            sector: stock.sector,
+                            current_price: stock.price,
+                            dividend_yield: stock.dividend_yield,
+                            weight_percent: (weight * 100).toFixed(1),
+                            amount_to_invest: amount_to_invest,
+                            quantity_to_buy: quantity_to_buy,
+                            annual_income: annual_income,
+                            recommendation: recommendation
+                        });
+                        
+                        total_projected_income += annual_income;
+                    }
+                });
+
+                // Calcular porcentaje del objetivo alcanzado
+                const new_capital = goalMetrics.current_capital + investment_to_use;
+                const new_progress = goalMetrics.capital_needed > 0 ? 
+                    (new_capital / goalMetrics.capital_needed * 100) : 0;
+
+                return {
+                    recommendations: recommendations.sort((a, b) => b.weight_percent - a.weight_percent),
+                    total_investment: investment_to_use,
+                    projected_income: total_projected_income,
+                    goal_achieved: new_progress,
+                    missing_capital: Math.max(0, missing_capital - investment_to_use)
+                };
+            }
+        }
+
+        // ============================================================================
+        // APLICACIÓN PRINCIPAL
+        // ============================================================================
+
+        let portfolio = new Portfolio();
+        let currentPrices = {};
+        let selectedRow = null;
+        let currentChart = null;
+        let sectorChart = null;
+        let performanceChart = null;
+        let mainChart = null;
+        let lastRecommendation = null;
+
+        // Métodos de utilidad
+        function formatCurrency(value) {
+            if (typeof value !== 'number') value = 0;
+            return '$' + value.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatPercent(value) {
+            if (typeof value !== 'number') value = 0;
+            return value.toFixed(2) + '%';
+        }
+
+        function getSourceName(source) {
+            const sourceNames = {
+                'yfinance': 'Yahoo Finance',
+                'byma': 'BYMA',
+                'multi': 'Múltiples Fuentes'
+            };
+            return sourceNames[source] || 'Yahoo Finance';
+        }
+
+        // Simulación de precios
+        function getMockPrice(ticker) {
+            const basePrices = {
+                'KO': 21500,
+                'JPM': 16800,
+                'MSFT': 86000,
+                'XOM': 14200,
+                'JNJ': 18200,
+                'PG': 18100,
+                'V': 45500,
+                'CEPU': 5800,
+                'BMA': 3800,
+                'YPFD': 8700,
+                'GGAL': 4500,
+                'PAMP': 3200,
+                'TXAR': 5800,
+                'IRSA': 1200,
+                'COME': 800
+            };
+            
+            const basePrice = basePrices[ticker] || 10000;
+            const variation = (Math.random() - 0.5) * 0.1;
+            return basePrice * (1 + variation);
+        }
+
+        // ============================================================================
+        // MANEJO DE LA INTERFAZ
+        // ============================================================================
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            setupTabs();
+            setupEventListeners();
+            initializePortfolio();
+            
+            // Establecer fecha actual por defecto en los formularios
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('addFecha').value = today;
+            document.getElementById('modifyFecha').value = today;
+            
+            // Cargar fuente de datos actual
+            document.getElementById('dataSource').value = portfolio.data_source;
+            
+            // Inicializar precios
+            updatePrices();
+        });
+
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remover clase active de todas las pestañas y contenidos
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Activar pestaña y contenido seleccionado
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // Si se activa la pestaña de recomendaciones, actualizar
+                    if (tabId === 'recommendation') {
+                        updateGoalSummary();
+                        if (lastRecommendation) {
+                            displayRecommendationResults(lastRecommendation);
+                        }
+                    }
+                    
+                    // Si se activa la pestaña de gráficos, actualizar el gráfico
+                    if (tabId === 'charts') {
+                        updateMainChart();
+                    }
+                });
+            });
+        }
+
+        function setupEventListeners() {
+            // Botón actualizar precios
+            document.getElementById('updateButton').addEventListener('click', updatePrices);
+            
+            // Selector de fuente de datos
+            document.getElementById('dataSource').addEventListener('change', function() {
+                portfolio.updateDataSource(this.value);
+                updateStatusMessage(`Fuente cambiada a: ${getSourceName(this.value)}`);
+                updatePrices();
+            });
+            
+            // Botones de posiciones
+            document.getElementById('addPositionButton').addEventListener('click', function() {
+                openModal('addPositionModal');
+            });
+            
+            document.getElementById('modifyPositionButton').addEventListener('click', function() {
+                if (selectedRow !== null) {
+                    const ticker = document.querySelector(`#positionsTableBody tr:nth-child(${selectedRow + 1}) td:nth-child(1)`).textContent;
+                    const position = portfolio.positions[ticker];
+                    if (position) {
+                        document.getElementById('modifyTicker').value = position.ticker;
+                        document.getElementById('modifyNombre').value = position.nombre;
+                        document.getElementById('modifySector').value = position.sector;
+                        document.getElementById('modifyCantidad').value = position.cantidad;
+                        document.getElementById('modifyPrecio').value = position.precio_compra;
+                        document.getElementById('modifyFecha').value = position.fecha_compra;
+                        openModal('modifyPositionModal');
+                    }
+                } else {
+                    alert('Por favor seleccione una posición para modificar');
+                }
+            });
+            
+            document.getElementById('deletePositionButton').addEventListener('click', function() {
+                if (selectedRow !== null) {
+                    const ticker = document.querySelector(`#positionsTableBody tr:nth-child(${selectedRow + 1}) td:nth-child(1)`).textContent;
+                    if (confirm(`¿Está seguro de eliminar la posición ${ticker}?`)) {
+                        if (portfolio.removePosition(ticker)) {
+                            updateAll();
+                            selectedRow = null;
+                            alert('Posición eliminada correctamente');
+                        } else {
+                            alert('No se pudo eliminar la posición');
+                        }
+                    }
+                } else {
+                    alert('Por favor seleccione una posición para eliminar');
+                }
+            });
+            
+            // Buscador
+            document.getElementById('searchInput').addEventListener('input', filterPositions);
+            
+            // Botón calcular recomendaciones
+            document.getElementById('calculateRecommendation').addEventListener('click', calculateRecommendations);
+            
+            // Slider de porcentaje para nuevas acciones
+            document.getElementById('newStocksPercentage').addEventListener('input', function() {
+                document.getElementById('newStocksValue').textContent = this.value + '%';
+            });
+            
+            // Botón exportar recomendaciones
+            document.getElementById('exportRecommendations').addEventListener('click', exportRecommendations);
+            
+            // Botón rebalancear portfolio
+            document.getElementById('rebalancePortfolio').addEventListener('click', rebalancePortfolio);
+            
+            // Botón cambiar objetivo
+            document.getElementById('changeGoalButton').addEventListener('click', function() {
+                document.getElementById('goalIncome').value = portfolio.goal_annual_income;
+                document.getElementById('goalYield').value = portfolio.goal_yield;
+                updateGoalInfo();
+                openModal('changeGoalModal');
+            });
+            
+            // Simulador
+            document.getElementById('simulateButton').addEventListener('click', runSimulation);
+            
+            // Análisis de optimización
+            document.getElementById('analyzeButton').addEventListener('click', analyzeOptimization);
+            
+            // Selector de gráficos
+            document.getElementById('chartSelector').addEventListener('change', updateMainChart);
+            
+            // Actualizar información del objetivo cuando cambian los valores
+            document.getElementById('goalIncome').addEventListener('input', updateGoalInfo);
+            document.getElementById('goalYield').addEventListener('input', updateGoalInfo);
+        }
+
+        function initializePortfolio() {
+            updateStatusMessage(`Listo - Usando ${getSourceName(portfolio.data_source)}`);
+        }
+
+        function updateAll() {
+            updatePositionsTable();
+            updateDashboard();
+            updateGoalAnalysis();
+            updateAlerts();
+            updateCharts();
+            updateGoalSummary();
+        }
+
+        function updatePositionsTable() {
+            const tableBody = document.getElementById('positionsTableBody');
+            tableBody.innerHTML = '';
+            
+            let total_invested = 0;
+            let total_current = 0;
+            let total_gain = 0;
+            
+            Object.values(portfolio.positions).forEach(position => {
+                const current_price = currentPrices[position.ticker] || 0;
+                const current_value = position.cantidad * current_price;
+                const invested_value = position.inversion_inicial;
+                const gain_amount = current_value - invested_value;
+                const gain_pct = invested_value > 0 ? (gain_amount / invested_value * 100) : 0;
+                const dividend_yield = 3.0; // Simulado
+                
+                // Calcular rendimiento (porcentaje de la cartera)
+                // Primero sumamos todo para calcular el total
+                total_invested += invested_value;
+                total_current += current_value;
+                total_gain += gain_amount;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${position.ticker}</td>
+                    <td>${position.nombre}</td>
+                    <td>${position.sector}</td>
+                    <td>${position.cantidad}</td>
+                    <td>${formatCurrency(position.precio_compra)}</td>
+                    <td>${formatCurrency(current_price)}</td>
+                    <td>${formatCurrency(current_value)}</td>
+                    <td>${formatCurrency(invested_value)}</td>
+                    <td class="${gain_amount >= 0 ? 'positive-value' : 'negative-value'}">${formatCurrency(gain_amount)}</td>
+                    <td class="${gain_amount >= 0 ? 'positive-value' : 'negative-value'}">${formatPercent(gain_pct)}</td>
+                    <td>${formatPercent(dividend_yield)}</td>
+                    <td>${total_current > 0 ? ((current_value / total_current) * 100).toFixed(1) : '0.0'}%</td>
+                `;
+                
+                row.addEventListener('click', function() {
+                    // Remover selección de todas las filas
+                    document.querySelectorAll('#positionsTableBody tr').forEach(r => {
+                        r.style.backgroundColor = '';
+                    });
+                    
+                    // Seleccionar esta fila
+                    this.style.backgroundColor = 'var(--primary-color)';
+                    selectedRow = Array.from(this.parentNode.children).indexOf(this);
+                });
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Recalcular porcentajes después de tener el total
+            const rows = document.querySelectorAll('#positionsTableBody tr');
+            rows.forEach((row, index) => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 12) {
+                    const current_value = parseFloat(cells[6].textContent.replace('$', '').replace(',', '')) || 0;
+                    const portfolio_pct = total_current > 0 ? (current_value / total_current * 100) : 0;
+                    cells[11].textContent = portfolio_pct.toFixed(1) + '%';
+                }
+            });
+            
+            // Actualizar métricas totales
+            const total_gain_pct = total_invested > 0 ? (total_gain / total_invested * 100) : 0;
+            
+            document.getElementById('totalInvestedValue').textContent = formatCurrency(total_invested);
+            document.getElementById('totalCurrentValue').textContent = formatCurrency(total_current);
+            
+            const totalGainElement = document.getElementById('totalGainValue');
+            totalGainElement.textContent = `${formatCurrency(total_gain)} (${formatPercent(total_gain_pct)})`;
+            
+            if (total_gain >= 0) {
+                totalGainElement.className = 'total-metric-value total-gain-positive';
+            } else {
+                totalGainElement.className = 'total-metric-value total-gain-negative';
+            }
+        }
+
+        function filterPositions() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#positionsTableBody tr');
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowText = Array.from(cells).slice(0, 3).map(cell => cell.textContent.toLowerCase()).join(' ');
+                row.style.display = rowText.includes(searchText) ? '' : 'none';
+            });
+        }
+
+        function updateDashboard() {
+            // Calcular métricas
+            const total_invested = Object.values(portfolio.positions).reduce((sum, pos) => sum + pos.inversion_inicial, 0);
+            const total_value = Object.values(portfolio.positions).reduce((sum, pos) => {
+                return sum + (pos.cantidad * (currentPrices[pos.ticker] || 0));
+            }, 0);
+            const total_gain = total_value - total_invested;
+            const gain_pct = total_invested > 0 ? (total_gain / total_invested * 100) : 0;
+            
+            // Encontrar mejor y peor performer
+            let performers = [];
+            for (const ticker in portfolio.positions) {
+                const position = portfolio.positions[ticker];
+                const current_price = currentPrices[ticker] || 0;
+                const gain = position.precio_compra > 0 ? 
+                    ((current_price - position.precio_compra) / position.precio_compra * 100) : 0;
+                performers.push([ticker, gain]);
+            }
+            
+            performers.sort((a, b) => b[1] - a[1]);
+            const best_performer = performers.length > 0 ? performers[0] : ["N/A", 0];
+            const worst_performer = performers.length > 0 ? performers[performers.length - 1] : ["N/A", 0];
+            
+            // Actualizar métricas del dashboard
+            const metrics = [
+                {title: "Valor Total", value: formatCurrency(total_value), color: "#4fc3f7"},
+                {title: "Inversión Total", value: formatCurrency(total_invested), color: "#ffffff"},
+                {title: "Ganancia/Pérdida", value: `${formatCurrency(total_gain)} (${formatPercent(gain_pct)})`, 
+                 color: total_gain >= 0 ? "#4caf50" : "#f44336"},
+                {title: "Dividend Yield", value: "3.00%", color: "#ff9800"},
+                {title: "Dividendos Anuales", value: formatCurrency(total_value * 0.03), color: "#9c27b0"},
+                {title: "Efectivo", value: formatCurrency(portfolio.cash), color: "#00bcd4"},
+                {title: "Posiciones", value: Object.keys(portfolio.positions).length, color: "#795548"},
+                {title: "Mejor Performer", value: `${best_performer[0]} (${best_performer[1].toFixed(1)}%)`, 
+                 color: "#4caf50"},
+                {title: "Peor Performer", value: `${worst_performer[0]} (${worst_performer[1].toFixed(1)}%)`, 
+                 color: "#f44336"}
+            ];
+            
+            const dashboardMetrics = document.getElementById('dashboardMetrics');
+            dashboardMetrics.innerHTML = '';
+            
+            metrics.forEach(metric => {
+                const card = document.createElement('div');
+                card.className = 'metric-card';
+                card.innerHTML = `
+                    <div class="metric-title">${metric.title}</div>
+                    <div class="metric-value" style="color: ${metric.color}">${metric.value}</div>
+                `;
+                dashboardMetrics.appendChild(card);
+            });
+        }
+
+        function updateGoalAnalysis() {
+            const goalMetrics = portfolio.calculateGoalMetrics(currentPrices);
+            
+            // Actualizar etiquetas de objetivo
+            document.getElementById('goalValueLabel').textContent = formatCurrency(portfolio.goal_annual_income) + ' anuales';
+            document.getElementById('goalYieldValue').textContent = formatPercent(portfolio.goal_yield);
+            
+            // Actualizar barra de progreso
+            const progress = Math.min(100, goalMetrics.progress_pct);
+            const progressBar = document.getElementById('goalProgressBar');
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${progress.toFixed(1)}%`;
+            document.getElementById('progressLabel').textContent = `Progreso: ${progress.toFixed(1)}%`;
+            
+            // Actualizar métricas del objetivo
+            const goalMetricsGrid = document.getElementById('goalMetricsGrid');
+            const metricsData = [
+                {title: "Capital Actual", value: formatCurrency(goalMetrics.current_capital)},
+                {title: "Ingresos Actuales", value: formatCurrency(goalMetrics.current_income) + "/año"},
+                {title: "Capital Necesario", value: formatCurrency(goalMetrics.capital_needed)},
+                {title: "Falta para el Objetivo", value: formatCurrency(goalMetrics.missing_capital)}
+            ];
+            
+            goalMetricsGrid.innerHTML = '';
+            
+            metricsData.forEach(metric => {
+                const card = document.createElement('div');
+                card.className = 'metric-card';
+                card.innerHTML = `
+                    <div class="metric-title">${metric.title}</div>
+                    <div class="metric-value" style="color: #4fc3f7">${metric.value}</div>
+                `;
+                goalMetricsGrid.appendChild(card);
+            });
+        }
+
+        function updateGoalSummary() {
+            const goalMetrics = portfolio.calculateGoalMetrics(currentPrices);
+            
+            document.getElementById('goalSummaryIncome').textContent = formatCurrency(portfolio.goal_annual_income);
+            document.getElementById('goalSummaryYield').textContent = formatPercent(portfolio.goal_yield);
+            document.getElementById('goalSummaryCapital').textContent = formatCurrency(goalMetrics.capital_needed);
+            document.getElementById('goalSummaryCurrent').textContent = formatCurrency(goalMetrics.current_capital);
+        }
+
+        function updateCharts() {
+            updateSectorChart();
+            updatePerformanceChart();
+        }
+
+        function updateSectorChart() {
+            const ctx = document.getElementById('sectorChart').getContext('2d');
+            
+            // Calcular distribución por sector
+            const sectorValues = {};
+            Object.values(portfolio.positions).forEach(position => {
+                const current_price = currentPrices[position.ticker] || 0;
+                const value = position.cantidad * current_price;
+                if (!sectorValues[position.sector]) {
+                    sectorValues[position.sector] = 0;
+                }
+                sectorValues[position.sector] += value;
+            });
+            
+            const sectors = Object.keys(sectorValues);
+            const values = Object.values(sectorValues);
+            const colors = ["#4fc3f7", "#4caf50", "#ff9800", "#9c27b0", "#f44336", "#795548", "#607d8b"];
+            
+            // Destruir gráfico anterior si existe
+            if (sectorChart) {
+                sectorChart.destroy();
+            }
+            
+            // Si no hay datos, mostrar mensaje
+            if (sectors.length === 0) {
+                const noDataText = "No hay datos para mostrar";
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#ffffff";
+                ctx.textAlign = "center";
+                ctx.fillText(noDataText, ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+            
+            // Crear nuevo gráfico
+            sectorChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: sectors,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors.slice(0, sectors.length),
+                        borderWidth: 2,
+                        borderColor: '#2b2b2b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución por Sector',
+                            color: '#ffffff',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            // Calcular rendimientos
+            let performers = [];
+            for (const ticker in portfolio.positions) {
+                const position = portfolio.positions[ticker];
+                const current_price = currentPrices[ticker] || 0;
+                if (position.precio_compra > 0) {
+                    const gain_pct = ((current_price - position.precio_compra) / position.precio_compra * 100);
+                    performers.push({ticker, gain_pct});
+                }
+            }
+            
+            // Ordenar y tomar top 10
+            performers.sort((a, b) => b.gain_pct - a.gain_pct);
+            const topPerformers = performers.slice(0, 10);
+            
+            const tickers = topPerformers.map(p => p.ticker);
+            const gains = topPerformers.map(p => p.gain_pct);
+            const colors = gains.map(gain => gain >= 0 ? '#4caf50' : '#f44336');
+            
+            // Destruir gráfico anterior si existe
+            if (performanceChart) {
+                performanceChart.destroy();
+            }
+            
+            // Si no hay datos, mostrar mensaje
+            if (tickers.length === 0) {
+                const noDataText = "No hay datos para mostrar";
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#ffffff";
+                ctx.textAlign = "center";
+                ctx.fillText(noDataText, ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+            
+            // Crear nuevo gráfico
+            performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: tickers,
+                    datasets: [{
+                        label: 'Rendimiento %',
+                        data: gains,
+                        backgroundColor: colors,
+                        borderWidth: 1,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Top 10 Performers',
+                            color: '#ffffff',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Rendimiento: ${context.raw.toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: '#555555'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#ffffff',
+                                font: {
+                                    size: 11
+                                },
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: '#555555'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Rendimiento %',
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateMainChart() {
+            const chartType = document.getElementById('chartSelector').value;
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            
+            // Destruir gráfico anterior si existe
+            if (mainChart) {
+                mainChart.destroy();
+            }
+            
+            let chartConfig;
+            
+            switch(chartType) {
+                case 'sector':
+                    // Distribución por sector
+                    const sectorValues = {};
+                    Object.values(portfolio.positions).forEach(position => {
+                        const current_price = currentPrices[position.ticker] || 0;
+                        const value = position.cantidad * current_price;
+                        if (!sectorValues[position.sector]) {
+                            sectorValues[position.sector] = 0;
+                        }
+                        sectorValues[position.sector] += value;
+                    });
+                    
+                    chartConfig = {
+                        type: 'pie',
+                        data: {
+                            labels: Object.keys(sectorValues),
+                            datasets: [{
+                                data: Object.values(sectorValues),
+                                backgroundColor: ["#4fc3f7", "#4caf50", "#ff9800", "#9c27b0", "#f44336", "#795548", "#607d8b"],
+                                borderWidth: 2,
+                                borderColor: '#2b2b2b'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Distribución por Sector',
+                                    color: '#ffffff',
+                                    font: {
+                                        size: 18
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    break;
+                    
+                case 'performance':
+                    // Rendimiento por activo
+                    let performers = [];
+                    for (const ticker in portfolio.positions) {
+                        const position = portfolio.positions[ticker];
+                        const current_price = currentPrices[ticker] || 0;
+                        if (position.precio_compra > 0) {
+                            const gain_pct = ((current_price - position.precio_compra) / position.precio_compra * 100);
+                            performers.push({ticker, gain_pct});
+                        }
+                    }
+                    
+                    performers.sort((a, b) => b.gain_pct - a.gain_pct);
+                    
+                    chartConfig = {
+                        type: 'bar',
+                        data: {
+                            labels: performers.map(p => p.ticker),
+                            datasets: [{
+                                label: 'Rendimiento %',
+                                data: performers.map(p => p.gain_pct),
+                                backgroundColor: performers.map(p => p.gain_pct >= 0 ? '#4caf50' : '#f44336'),
+                                borderWidth: 1,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Rendimiento por Activo',
+                                    color: '#ffffff',
+                                    font: {
+                                        size: 18
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    break;
+                    
+                default:
+                    // Por defecto mostrar distribución por sector
+                    chartConfig = {
+                        type: 'pie',
+                        data: {
+                            labels: ['Tecnología', 'Financiero', 'Salud'],
+                            datasets: [{
+                                data: [40, 35, 25],
+                                backgroundColor: ["#4fc3f7", "#4caf50", "#ff9800"]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Gráfico de Ejemplo',
+                                    color: '#ffffff',
+                                    font: {
+                                        size: 18
+                                    }
+                                }
+                            }
+                        }
+                    };
+            }
+            
+            mainChart = new Chart(ctx, chartConfig);
+        }
+
+        function updateAlerts() {
+            const alertsList = document.getElementById('alertsList');
+            alertsList.innerHTML = '';
+            
+            // Alerta 1: Posiciones sin precio
+            const positionsWithoutPrice = Object.keys(portfolio.positions).filter(ticker => 
+                !currentPrices[ticker] || currentPrices[ticker] <= 0
+            );
+            
+            if (positionsWithoutPrice.length > 0) {
+                const alertItem = document.createElement('li');
+                alertItem.className = 'alert-item';
+                alertItem.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="color: #ff9800"></i>
+                    No se pudo obtener precio para: ${positionsWithoutPrice.join(', ')}
+                `;
+                alertsList.appendChild(alertItem);
+            }
+            
+            // Alerta 2: Recomendaciones de diversificación
+            const sectors = {};
+            let total_value = 0;
+            
+            Object.values(portfolio.positions).forEach(position => {
+                const current_price = currentPrices[position.ticker] || 0;
+                const value = position.cantidad * current_price;
+                total_value += value;
+                
+                if (!sectors[position.sector]) {
+                    sectors[position.sector] = 0;
+                }
+                sectors[position.sector] += value;
+            });
+            
+            if (total_value > 0) {
+                for (const sector in sectors) {
+                    const sector_pct = (sectors[sector] / total_value) * 100;
+                    if (sector_pct > 30) {
+                        const alertItem = document.createElement('li');
+                        alertItem.className = 'alert-item';
+                        alertItem.innerHTML = `
+                            <i class="fas fa-exclamation-triangle" style="color: #ff9800"></i>
+                            Sector ${sector} concentra ${sector_pct.toFixed(1)}% del portfolio. Considere diversificar.
+                        `;
+                        alertsList.appendChild(alertItem);
+                    }
+                }
+            }
+            
+            // Alerta 3: Objetivo cercano
+            const goalMetrics = portfolio.calculateGoalMetrics(currentPrices);
+            if (goalMetrics.progress_pct >= 75) {
+                const alertItem = document.createElement('li');
+                alertItem.className = 'alert-item';
+                alertItem.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: #4caf50"></i>
+                    ¡Estás a ${(100 - goalMetrics.progress_pct).toFixed(1)}% de alcanzar tu objetivo! Continúa así.
+                `;
+                alertsList.appendChild(alertItem);
+            }
+            
+            // Si no hay alertas, mostrar mensaje positivo
+            if (alertsList.children.length === 0) {
+                const alertItem = document.createElement('li');
+                alertItem.className = 'alert-item';
+                alertItem.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: #4caf50"></i>
+                    Todo en orden. Tu portfolio está bien diversificado y funcionando correctamente.
+                `;
+                alertsList.appendChild(alertItem);
+            }
+        }
+
+        // ============================================================================
+        // FUNCIONES PARA LA NUEVA PESTAÑA DE RECOMENDACIÓN
+        // ============================================================================
+
+        function calculateRecommendations() {
+            const investmentAmount = parseFloat(document.getElementById('investmentAmount').value) || 0;
+            const strategy = document.getElementById('distributionStrategy').value;
+            
+            if (investmentAmount <= 0) {
+                alert('Por favor ingrese un monto válido para invertir');
+                return;
+            }
+            
+            // Mostrar carga
+            const calculateButton = document.getElementById('calculateRecommendation');
+            const originalText = calculateButton.innerHTML;
+            calculateButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculando...';
+            calculateButton.disabled = true;
+            
+            // Simular cálculo
+            setTimeout(() => {
+                const recommendation = portfolio.getRecommendedPurchases(currentPrices, investmentAmount, strategy);
+                lastRecommendation = recommendation;
+                
+                displayRecommendationResults(recommendation);
+                
+                // Restaurar botón
+                calculateButton.innerHTML = '<i class="fas fa-calculator"></i> Calcular Recomendaciones de Compra';
+                calculateButton.disabled = false;
+                
+                // Mostrar mensaje de éxito
+                updateStatusMessage(`Recomendaciones calculadas: ${recommendation.recommendations.length} acciones recomendadas`);
+            }, 1000);
+        }
+
+        function displayRecommendationResults(recommendation) {
+            // Actualizar resumen
+            document.getElementById('totalInvestmentAmount').textContent = formatCurrency(recommendation.total_investment);
+            document.getElementById('recommendedStocksCount').textContent = recommendation.recommendations.length;
+            document.getElementById('projectedIncome').textContent = formatCurrency(recommendation.projected_income);
+            document.getElementById('goalAchievedPercent').textContent = formatPercent(recommendation.goal_achieved);
+            
+            // Actualizar tabla
+            const tableBody = document.getElementById('recommendationsTableBody');
+            tableBody.innerHTML = '';
+            
+            if (recommendation.recommendations.length > 0) {
+                recommendation.recommendations.forEach(rec => {
+                    const row = document.createElement('tr');
+                    
+                    // Determinar clase CSS para la recomendación
+                    let recClass = '';
+                    if (rec.recommendation === 'COMPRAR') recClass = 'buy-recommendation';
+                    else if (rec.recommendation === 'MANTENER') recClass = 'hold-recommendation';
+                    else recClass = 'sell-recommendation';
+                    
+                    row.innerHTML = `
+                        <td><strong>${rec.ticker}</strong><br><small>${rec.nombre}</small></td>
+                        <td>${formatCurrency(rec.current_price)}</td>
+                        <td>${formatPercent(rec.dividend_yield)}</td>
+                        <td>${rec.weight_percent}%</td>
+                        <td>${formatCurrency(rec.amount_to_invest)}</td>
+                        <td><strong>${rec.quantity_to_buy}</strong> acciones</td>
+                        <td>${formatCurrency(rec.annual_income)}/año</td>
+                        <td class="${recClass}">${rec.recommendation}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-check-circle" style="font-size: 48px; color: #4caf50; margin-bottom: 20px;"></i>
+                            <h3>¡Felicidades!</h3>
+                            <p>Ya has alcanzado tu objetivo de ingresos anuales.</p>
+                            <p>No necesitas hacer más compras en este momento.</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function exportRecommendations() {
+            if (!lastRecommendation || lastRecommendation.recommendations.length === 0) {
+                alert('No hay recomendaciones para exportar. Por favor calcule primero las recomendaciones.');
+                return;
+            }
+            
+            let csvContent = "Acción,Nombre,Sector,Precio Actual,Dividend Yield,%,Monto a Invertir,Cantidad,Ingreso Anual,Recomendación\n";
+            
+            lastRecommendation.recommendations.forEach(rec => {
+                csvContent += `"${rec.ticker}","${rec.nombre}","${rec.sector}",${rec.current_price},${rec.dividend_yield}%,${rec.weight_percent}%,${rec.amount_to_invest},${rec.quantity_to_buy},${rec.annual_income},"${rec.recommendation}"\n`;
+            });
+            
+            csvContent += `\n\nResumen:\n`;
+            csvContent += `Total a Invertir:,${formatCurrency(lastRecommendation.total_investment)}\n`;
+            csvContent += `Acciones Recomendadas:,${lastRecommendation.recommendations.length}\n`;
+            csvContent += `Ingresos Proyectados:,${formatCurrency(lastRecommendation.projected_income)}/año\n`;
+            csvContent += `% del Objetivo Alcanzado:,${formatPercent(lastRecommendation.goal_achieved)}\n`;
+            
+            // Crear y descargar archivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", `recomendaciones_compras_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            updateStatusMessage('Recomendaciones exportadas exitosamente');
+        }
+
+        function rebalancePortfolio() {
+            if (!lastRecommendation || lastRecommendation.recommendations.length === 0) {
+                alert('Por favor calcule primero las recomendaciones.');
+                return;
+            }
+            
+            if (!confirm('¿Está seguro de que desea rebalancear su portfolio automáticamente según las recomendaciones?\n\nEsta acción modificará sus posiciones actuales.')) {
+                return;
+            }
+            
+            // Simular rebalanceo
+            const rebalanceButton = document.getElementById('rebalancePortfolio');
+            const originalText = rebalanceButton.innerHTML;
+            rebalanceButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rebalanceando...';
+            rebalanceButton.disabled = true;
+            
+            setTimeout(() => {
+                // Aquí iría la lógica para actualizar el portfolio
+                // Por ahora solo mostramos un mensaje
+                alert('Portfolio rebalanceado exitosamente según las recomendaciones.\n\nNota: En una versión real, esta función modificaría automáticamente las posiciones en tu portfolio.');
+                
+                // Restaurar botón
+                rebalanceButton.innerHTML = '<i class="fas fa-balance-scale"></i> Rebalancear Portfolio Automáticamente';
+                rebalanceButton.disabled = false;
+                
+                // Actualizar todo
+                updateAll();
+                updateStatusMessage('Portfolio rebalanceado exitosamente');
+            }, 1500);
+        }
+
+        // ============================================================================
+        // FUNCIONES AUXILIARES PARA MODALES
+        // ============================================================================
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            
+            // Si es el modal de cambiar objetivo, cargar valores actuales
+            if (modalId === 'changeGoalModal') {
+                document.getElementById('goalIncome').value = portfolio.goal_annual_income;
+                document.getElementById('goalYield').value = portfolio.goal_yield;
+                updateGoalInfo();
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function updateGoalInfo() {
+            const income = parseFloat(document.getElementById('goalIncome').value) || 0;
+            const yield_pct = parseFloat(document.getElementById('goalYield').value) || 0;
+            const capital_needed = yield_pct > 0 ? (income / yield_pct) * 100 : 0;
+            
+            const goalInfo = document.getElementById('goalInfo');
+            goalInfo.innerHTML = `
+                <div style="font-size: 13px;">
+                    <span style="font-size: 16px;">💡</span> Con un yield del <b>${yield_pct}%</b>, necesitarías un capital de:<br><br>
+                    <div style="text-align: center; font-size: 15px;">
+                        <span style="color: #ff9800; font-weight: bold;">${formatCurrency(capital_needed)}</span>
+                    </div><br>
+                    Esto generaría <span style="color: #4caf50; font-weight: bold;">${formatCurrency(income)}</span> anuales en dividendos.
+                </div>
+            `;
+        }
+
+        function addPosition() {
+            const ticker = document.getElementById('addTicker').value.trim().toUpperCase();
+            const nombre = document.getElementById('addNombre').value.trim();
+            const sector = document.getElementById('addSector').value;
+            const cantidad = parseInt(document.getElementById('addCantidad').value);
+            const precio = parseFloat(document.getElementById('addPrecio').value);
+            const fecha = document.getElementById('addFecha').value;
+            
+            // Validaciones básicas
+            if (!ticker || !nombre) {
+                alert('Ticker y nombre son obligatorios');
+                return;
+            }
+            
+            if (cantidad <= 0 || precio <= 0) {
+                alert('Cantidad y precio deben ser mayores a cero');
+                return;
+            }
+            
+            // Agregar posición
+            if (portfolio.addPosition(ticker, nombre, sector, cantidad, precio, fecha)) {
+                closeModal('addPositionModal');
+                updatePrices();
+                alert('Posición agregada correctamente');
+            } else {
+                alert('No se pudo agregar la posición');
+            }
+        }
+
+        function saveModifiedPosition() {
+            if (selectedRow === null) return;
+            
+            const oldTicker = document.querySelector(`#positionsTableBody tr:nth-child(${selectedRow + 1}) td:nth-child(1)`).textContent;
+            const newTicker = document.getElementById('modifyTicker').value.trim().toUpperCase();
+            const nombre = document.getElementById('modifyNombre').value.trim();
+            const sector = document.getElementById('modifySector').value;
+            const cantidad = parseInt(document.getElementById('modifyCantidad').value);
+            const precio = parseFloat(document.getElementById('modifyPrecio').value);
+            const fecha = document.getElementById('modifyFecha').value;
+            
+            // Validaciones básicas
+            if (!newTicker || !nombre) {
+                alert('Ticker y nombre son obligatorios');
+                return;
+            }
+            
+            if (cantidad <= 0 || precio <= 0) {
+                alert('Cantidad y precio deben ser mayores a cero');
+                return;
+            }
+            
+            // Modificar posición
+            if (portfolio.updatePosition(oldTicker, newTicker, nombre, sector, cantidad, precio, fecha)) {
+                closeModal('modifyPositionModal');
+                updatePrices();
+                selectedRow = null;
+                alert('Posición modificada correctamente');
+            } else {
+                alert('No se pudo modificar la posición');
+            }
+        }
+
+        function saveGoal() {
+            const annual_income = parseFloat(document.getElementById('goalIncome').value);
+            const yield_pct = parseFloat(document.getElementById('goalYield').value);
+            
+            if (annual_income <= 0 || yield_pct <= 0) {
+                alert('Los valores deben ser mayores a cero');
+                return;
+            }
+            
+            if (portfolio.updateGoal(annual_income, yield_pct)) {
+                closeModal('changeGoalModal');
+                updateGoalAnalysis();
+                updateGoalSummary();
+                updateCharts();
+                alert('Objetivo actualizado correctamente');
+            } else {
+                alert('No se pudo actualizar el objetivo');
+            }
+        }
+
+        // ============================================================================
+        // SIMULACIÓN Y ANÁLISIS
+        // ============================================================================
+
+        function runSimulation() {
+            try {
+                // Obtener valores de entrada
+                const monthly_investment = parseFloat(document.getElementById('monthlyInput').value);
+                const annual_rate = parseFloat(document.getElementById('rateInput').value);
+                const years = parseInt(document.getElementById('yearsInput').value);
+                
+                if (monthly_investment <= 0 || annual_rate <= 0 || years <= 0) {
+                    alert('Todos los valores deben ser mayores a 0');
+                    return;
+                }
+                
+                // Capital actual
+                let current_capital = 0;
+                for (const ticker in portfolio.positions) {
+                    const position = portfolio.positions[ticker];
+                    const current_price = currentPrices[ticker] || 0;
+                    current_capital += position.cantidad * current_price;
+                }
+                
+                // Simular crecimiento
+                const monthly_rate = annual_rate / 12 / 100;
+                const months = years * 12;
+                
+                let future_capital = current_capital;
+                const capital_history = [current_capital];
+                
+                for (let month = 1; month <= months; month++) {
+                    future_capital += monthly_investment;
+                    future_capital *= (1 + monthly_rate);
+                    capital_history.push(future_capital);
+                }
+                
+                // Calcular ingresos proyectados
+                const projected_income = future_capital * (portfolio.goal_yield / 100);
+                
+                // Generar reporte
+                let report = `📈 SIMULACIÓN DE APORTES MENSUALES
+─────────────────────────────────────
+• Aporte mensual: ${formatCurrency(monthly_investment)}
+• Tasa anual estimada: ${annual_rate}%
+• Período: ${years} años (${months} meses)
+• Capital actual: ${formatCurrency(current_capital)}
+
+💰 RESULTADOS PROYECTADOS:
+• Capital futuro: ${formatCurrency(future_capital)}
+• Crecimiento total: ${formatCurrency(future_capital - current_capital)}
+• Ingresos anuales proyectados: ${formatCurrency(projected_income)}
+• Porcentaje del objetivo: ${((projected_income / portfolio.goal_annual_income) * 100).toFixed(1)}%
+
+📊 PROYECCIÓN ANUAL:
+`;
+                
+                // Añadir proyección anual
+                for (let year = 1; year <= years; year++) {
+                    const year_capital = capital_history[year * 12];
+                    const year_income = year_capital * (portfolio.goal_yield / 100);
+                    report += `Año ${year}: ${formatCurrency(year_capital)} → ${formatCurrency(year_income)}/año\n`;
+                }
+                
+                report += `
+💡 CONSEJO:
+Con esta estrategia, en ${years} años podrías alcanzar un ${((projected_income / portfolio.goal_annual_income) * 100).toFixed(1)}% de tu objetivo.`;
+                
+                document.getElementById('simulationResult').textContent = report;
+                
+            } catch (e) {
+                alert('Por favor ingrese valores numéricos válidos');
+                console.error(e);
+            }
+        }
+
+        function analyzeOptimization() {
+            try {
+                let analysis = "🔍 ANÁLISIS DE OPTIMIZACIÓN DEL PORTFOLIO\n";
+                analysis += "════════════════════════════════════════\n\n";
+                
+                // 1. Análisis de diversificación por sector
+                analysis += "📊 DIVERSIFICACIÓN POR SECTOR:\n";
+                const sectors = {};
+                let total_value = 0;
+                
+                for (const ticker in portfolio.positions) {
+                    const position = portfolio.positions[ticker];
+                    const current_price = currentPrices[ticker] || 0;
+                    const value = position.cantidad * current_price;
+                    total_value += value;
+                    
+                    if (!sectors[position.sector]) {
+                        sectors[position.sector] = 0;
+                    }
+                    sectors[position.sector] += value;
+                }
+                
+                for (const sector in sectors) {
+                    const sector_pct = (sectors[sector] / total_value) * 100;
+                    analysis += `• ${sector}: ${sector_pct.toFixed(1)}%\n`;
+                }
+                
+                // Recomendaciones de diversificación
+                analysis += "\n✅ RECOMENDACIONES DE DIVERSIFICACIÓN:\n";
+                const overweight_sectors = Object.keys(sectors).filter(s => 
+                    (sectors[s] / total_value) * 100 > 30
+                );
+                const underweight_sectors = Object.keys(sectors).filter(s => 
+                    (sectors[s] / total_value) * 100 < 5
+                );
+                
+                if (overweight_sectors.length > 0) {
+                    analysis += `⚠️ Considerar reducir exposición en: ${overweight_sectors.join(', ')}\n`;
+                }
+                
+                if (underweight_sectors.length > 0) {
+                    analysis += `📈 Considerar aumentar exposición en: ${underweight_sectors.join(', ')}\n`;
+                }
+                
+                // 2. Análisis de rendimiento
+                analysis += "\n📈 RENDIMIENTO POR ACTIVO:\n";
+                let performers = [];
+                
+                for (const ticker in portfolio.positions) {
+                    const position = portfolio.positions[ticker];
+                    const current_price = currentPrices[ticker] || 0;
+                    if (position.precio_compra > 0) {
+                        const gain_pct = ((current_price - position.precio_compra) / position.precio_compra * 100);
+                        const current_value = position.cantidad * current_price;
+                        performers.push({ticker, gain_pct, current_value});
+                    }
+                }
+                
+                // Ordenar por rendimiento
+                performers.sort((a, b) => b.gain_pct - a.gain_pct);
+                
+                for (let i = 0; i < Math.min(5, performers.length); i++) {
+                    const p = performers[i];
+                    analysis += `• ${p.ticker}: ${p.gain_pct.toFixed(1)}% (${formatCurrency(p.current_value)})\n`;
+                }
+                
+                // 3. Relación con el objetivo
+                analysis += "\n🎯 RELACIÓN CON EL OBJETIVO:\n";
+                const goalMetrics = portfolio.calculateGoalMetrics(currentPrices);
+                analysis += `• Progreso: ${goalMetrics.progress_pct.toFixed(1)}%\n`;
+                analysis += `• Capital actual: ${formatCurrency(goalMetrics.current_capital)}\n`;
+                analysis += `• Capital necesario: ${formatCurrency(goalMetrics.capital_needed)}\n`;
+                analysis += `• Falta: ${formatCurrency(goalMetrics.missing_capital)}\n`;
+                
+                // Recomendaciones generales
+                analysis += "\n💡 RECOMENDACIONES GENERALES:\n";
+                if (goalMetrics.progress_pct < 50) {
+                    analysis += "1. Enfocarse en activos con alto dividend yield\n";
+                    analysis += "2. Considerar aumentar aportes mensuales\n";
+                    analysis += "3. Reinvertir dividendos para acelerar el crecimiento\n";
+                } else if (goalMetrics.progress_pct < 80) {
+                    analysis += "1. Mantener diversificación\n";
+                    analysis += "2. Rebalancear portfolio periódicamente\n";
+                    analysis += "3. Considerar opciones más conservadoras para preservar capital\n";
+                } else {
+                    analysis += "1. ¡Excelente progreso!\n";
+                    analysis += "2. Considerar estrategias de preservación de capital\n";
+                    analysis += "3. Evaluar tomar algunos beneficios\n";
+                }
+                
+                document.getElementById('optimizationText').textContent = analysis;
+                
+            } catch (e) {
+                document.getElementById('optimizationText').textContent = `Error al analizar optimización: ${e.message}`;
+            }
+        }
+
+        // ============================================================================
+        // ACTUALIZACIÓN DE PRECIOS
+        // ============================================================================
+
+        function updatePrices() {
+            if (Object.keys(portfolio.positions).length === 0) {
+                alert('No hay posiciones para actualizar');
+                return;
+            }
+            
+            const tickers = Object.keys(portfolio.positions);
+            const updateButton = document.getElementById('updateButton');
+            const progressBar = document.getElementById('progressBarStatus');
+            const progressFill = document.getElementById('progressBarFill');
+            
+            // Mostrar barra de progreso
+            updateButton.disabled = true;
+            updateButton.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Actualizando...';
+            progressBar.style.display = 'block';
+            
+            // Simular actualización de precios (en una app real, esto sería una llamada a una API)
+            currentPrices = {};
+            let completed = 0;
+            
+            // Simular obtención de precios de cada ticker
+            tickers.forEach((ticker, index) => {
+                setTimeout(() => {
+                    // Simular precio (en una app real, aquí se llamaría a una API)
+                    currentPrices[ticker] = getMockPrice(ticker);
+                    completed++;
+                    
+                    // Actualizar progreso
+                    const progress = Math.round((completed / tickers.length) * 100);
+                    progressFill.style.width = `${progress}%`;
+                    progressFill.textContent = `${progress}%`;
+                    
+                    // Actualizar mensaje de estado
+                    updateStatusMessage(`Consultando ${getSourceName(portfolio.data_source)}: ${ticker}`);
+                    
+                    // Si terminamos
+                    if (completed === tickers.length) {
+                        updateButton.disabled = false;
+                        updateButton.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Precios';
+                        progressBar.style.display = 'none';
+                        
+                        const valid_prices = Object.values(currentPrices).filter(p => p > 0).length;
+                        updateStatusMessage(
+                            `Precios actualizados: ${valid_prices}/${tickers.length} tickers obtenidos - ` +
+                            `Usando ${getSourceName(portfolio.data_source)}`
+                        );
+                        
+                        // Actualizar toda la interfaz
+                        updateAll();
+                    }
+                }, index * 100); // Simular delay de red
+            });
+        }
+
+        function updateStatusMessage(message) {
+            document.getElementById('statusMessage').textContent = message;
+        }
+
+        // Cerrar modales haciendo clic fuera
+        window.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal-overlay');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Inicializar el slider de porcentaje
+        document.getElementById('newStocksPercentage').addEventListener('input', function() {
+            document.getElementById('newStocksValue').textContent = this.value + '%';
+        });
+    </script>
+</body>
+</html>
